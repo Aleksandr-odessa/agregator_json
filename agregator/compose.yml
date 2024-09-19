@@ -1,0 +1,28 @@
+name: project_docker_test2
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: project_docker
+    restart: always
+    environment:
+      POSTGRES_DB: logspostgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+        - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  web:
+    build: .
+    container_name: django_web
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+
+
+volumes:
+  pgdata:
